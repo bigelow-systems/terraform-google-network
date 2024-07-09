@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project ID of the Network firewall policy"
+variable "parent_node" {
+  description = "The parent of the firewall policy. Parent should be in format organizations/<org-id> or folders/<folder_id>"
   type        = string
 }
 
 variable "policy_name" {
-  description = "User-provided name of the Network firewall policy"
+  description = "User-provided name of the hierarchical firewall policy"
   type        = string
   validation {
     condition     = can(regex("^[a-z][a-z0-9-]{0,62}$", var.policy_name))
-    error_message = "The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash"
+    error_message = "User-provided name of the Organization firewall policy. The name should be unique in the organization in which the firewall policy is created. The name must be 1-63 characters long and match the regular expression a-z? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash"
   }
 }
 
@@ -34,14 +34,14 @@ variable "description" {
   default     = null
 }
 
-variable "target_vpcs" {
-  description = "List of target VPC IDs that the firewall policy will be attached to"
+variable "target_folders" {
+  description = "List of target folders IDs that the firewall policy will be attached to"
   type        = list(string)
   default     = []
 }
 
-variable "policy_region" {
-  description = "Location of the firewall policy. Needed for regional firewall policies. Default is null (Global firewall policy)"
+variable "target_org" {
+  description = "Target org id that the firewall policy will be attached to"
   type        = string
   default     = null
 }
@@ -56,13 +56,12 @@ variable "rules" {
     disabled                = optional(bool)
     description             = optional(string)
     enable_logging          = optional(bool)
-    target_secure_tags      = optional(list(string))
-    target_service_accounts = optional(list(string))
+    target_service_accounts = optional(list(string), [])
+    target_resources        = optional(list(string), [])
     match = object({
       src_ip_ranges             = optional(list(string), [])
       src_fqdns                 = optional(list(string), [])
       src_region_codes          = optional(list(string), [])
-      src_secure_tags           = optional(list(string), [])
       src_threat_intelligences  = optional(list(string), [])
       src_address_groups        = optional(list(string), [])
       dest_ip_ranges            = optional(list(string), [])
@@ -77,11 +76,4 @@ variable "rules" {
     })
   }))
   default = []
-  validation {
-    condition = alltrue(
-      [for v in var.rules : !(length(coalesce(v.target_secure_tags, [])) > 0 && length(coalesce(v.target_service_accounts, [])) > 0)]
-    )
-    error_message = "target_secure_tags may not be set at the same time as target_service_accounts"
-  }
-
 }

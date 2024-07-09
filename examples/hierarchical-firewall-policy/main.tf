@@ -15,11 +15,7 @@
  */
 
 locals {
-  prefix = "global"
-}
-
-data "google_project" "project" {
-  project_id = var.project_id
+  prefix = "hierarchical"
 }
 
 resource "random_string" "random_suffix" {
@@ -27,6 +23,12 @@ resource "random_string" "random_suffix" {
   special = false
   lower   = true
   upper   = false
+}
+
+resource "google_service_account" "service_account" {
+  project      = var.project_id
+  account_id   = "${local.prefix}-fw-test-svc-acct"
+  display_name = "${local.prefix} firewall policy test service account"
 }
 
 resource "google_compute_network" "network" {
@@ -39,52 +41,15 @@ resource "google_compute_network" "network_backup" {
   name    = "${local.prefix}-network-backup"
 }
 
-resource "google_tags_tag_key" "tag_key" {
-
-  description = "For keyname resources."
-  parent      = "projects/${data.google_project.project.number}"
-  purpose     = "GCE_FIREWALL"
-  short_name  = local.prefix
-  purpose_data = {
-    network = "${var.project_id}/${google_compute_network.network.name}"
-  }
-}
-
-resource "google_tags_tag_value" "tag_value" {
-  description = "For valuename resources."
-  parent      = "tagKeys/${google_tags_tag_key.tag_key.name}"
-  short_name  = "yes"
-}
-
-resource "google_network_security_address_group" "networksecurity_address_group" {
-  provider = google-beta
-
-  name        = "${local.prefix}-policy"
-  parent      = "projects/${var.project_id}"
-  description = "${local.prefix} networksecurity_address_group"
-  location    = local.prefix
-  items       = ["208.80.154.224/32"]
-  type        = "IPV4"
-  capacity    = 100
-}
-
-resource "google_service_account" "service_account" {
-  project      = var.project_id
-  account_id   = "${local.prefix}-fw-test-svc-acct"
-  display_name = "${local.prefix} firewall policy test service account"
-}
-
 module "firewal_policy" {
-  source  = "terraform-google-modules/network/google//modules/network-firewall-policy"
+  source  = "terraform-google-modules/network/google//modules/hierarchical-firewall-policy"
   version = "~> 9.0"
 
-  project_id  = var.project_id
-  policy_name = "${local.prefix}-firewall-policy-${random_string.random_suffix.result}"
-  description = "test ${local.prefix} firewall policy"
-  target_vpcs = [
-    "projects/${var.project_id}/global/networks/${local.prefix}-network",
-    "projects/${var.project_id}/global/networks/${local.prefix}-network-backup",
-  ]
+  parent_node    = "folders/${var.folder1}"
+  policy_name    = "${local.prefix}-firewall-policy-${random_string.random_suffix.result}"
+  description    = "test ${local.prefix} firewall policy"
+  target_org     = var.org_id
+  target_folders = [var.folder2, var.folder3]
 
   rules = [
     {
@@ -96,11 +61,9 @@ module "firewal_policy" {
       enable_logging = true
       match = {
         src_ip_ranges            = ["10.100.0.1/32"]
-        src_fqdns                = ["google.com"]
+        src_fqdns                = ["example.com"]
         src_region_codes         = ["US"]
         src_threat_intelligences = ["iplist-public-clouds"]
-        src_secure_tags          = ["tagValues/${google_tags_tag_value.tag_value.name}"]
-        src_address_groups       = [google_network_security_address_group.networksecurity_address_group.id]
         layer4_configs = [
           {
             ip_protocol = "all"
@@ -109,16 +72,18 @@ module "firewal_policy" {
       }
     },
     {
-      priority           = "2"
-      direction          = "INGRESS"
-      action             = "deny"
-      rule_name          = "ingress-2"
-      disabled           = true
-      description        = "test ingres rule 2"
-      target_secure_tags = ["tagValues/${google_tags_tag_value.tag_value.name}"]
+      priority    = "2"
+      direction   = "INGRESS"
+      action      = "deny"
+      rule_name   = "ingress-2"
+      disabled    = true
+      description = "test ingres rule 2"
+      target_resources = [
+        "projects/${var.project_id}/global/networks/${local.prefix}-network-backup",
+      ]
       match = {
         src_ip_ranges    = ["10.100.0.2/32"]
-        src_fqdns        = ["google.org"]
+        src_fqdns        = ["example.org"]
         src_region_codes = ["BE"]
         layer4_configs = [
           {
@@ -156,10 +121,9 @@ module "firewal_policy" {
       enable_logging = true
       match = {
         src_ip_ranges             = ["10.100.0.2/32"]
-        dest_fqdns                = ["google.com"]
+        dest_fqdns                = ["example.com"]
         dest_region_codes         = ["US"]
         dest_threat_intelligences = ["iplist-public-clouds"]
-        dest_address_groups       = [google_network_security_address_group.networksecurity_address_group.id]
         layer4_configs = [
           {
             ip_protocol = "all"
@@ -168,15 +132,17 @@ module "firewal_policy" {
       }
     },
     {
-      priority           = "102"
-      direction          = "EGRESS"
-      action             = "deny"
-      rule_name          = "egress-102"
-      disabled           = true
-      description        = "test egress rule 102"
-      target_secure_tags = ["tagValues/${google_tags_tag_value.tag_value.name}"]
+      priority    = "102"
+      direction   = "EGRESS"
+      action      = "deny"
+      rule_name   = "egress-102"
+      disabled    = true
+      description = "test egress rule 102"
+      target_resources = [
+        "projects/${var.project_id}/global/networks/${local.prefix}-network",
+      ]
       match = {
-        dest_ip_ranges    = ["10.100.0.102/32"]
+        src_ip_ranges     = ["10.100.0.102/32"]
         dest_ip_ranges    = ["10.100.0.2/32"]
         dest_region_codes = ["AR"]
         layer4_configs = [
@@ -207,17 +173,18 @@ module "firewal_policy" {
     },
 
   ]
-
   depends_on = [
     google_compute_network.network,
+    google_compute_network.network_backup,
   ]
 
 }
 
 module "firewal_policy_no_rule" {
-  source      = "terraform-google-modules/network/google//modules/network-firewall-policy"
-  version     = "~> 9.0"
-  project_id  = var.project_id
+  source  = "terraform-google-modules/network/google//modules/hierarchical-firewall-policy"
+  version = "~> 9.0"
+
+  parent_node = "folders/${var.folder1}"
   policy_name = "${local.prefix}-firewall-policy-no-rules-${random_string.random_suffix.result}"
   description = "${local.prefix} test firewall policy without any rules"
 }
