@@ -95,7 +95,7 @@ variable "firewall_rules" {
       metadata = string
     }))
   }))
-  description = "This is DEPRICATED and available for backward compatiblity. Use ingress_rules and egress_rules variables. List of firewall rules"
+  description = "This is DEPRECATED and available for backward compatibility. Use ingress_rules and egress_rules variables. List of firewall rules"
   default     = []
 }
 
@@ -184,7 +184,7 @@ variable "egress_rules" {
 
 variable "enable_ipv6_ula" {
   type        = bool
-  description = "Enabled IPv6 ULA, this is a permenant change and cannot be undone! (default 'false')"
+  description = "Enabled IPv6 ULA, this is a permanent change and cannot be undone! (default 'false')"
   default     = false
 }
 
@@ -198,4 +198,34 @@ variable "network_firewall_policy_enforcement_order" {
   type        = string
   default     = null
   description = "Set the order that Firewall Rules and Firewall Policies are evaluated. Valid values are `BEFORE_CLASSIC_FIREWALL` and `AFTER_CLASSIC_FIREWALL`. (default null or equivalent to `AFTER_CLASSIC_FIREWALL`)"
+}
+
+variable "network_profile" {
+  type        = string
+  default     = null
+  description = <<-EOT
+    "A full or partial URL of the network profile to apply to this network.
+    This field can be set only at resource creation time. For example, the
+    following are valid URLs:
+      * https://www.googleapis.com/compute/beta/projects/{projectId}/global/networkProfiles/{network_profile_name}
+      * projects/{projectId}/global/networkProfiles/{network_profile_name}
+    EOT
+}
+
+variable "bgp_always_compare_med" {
+  type        = bool
+  description = "If set to true, the Cloud Router will use MED values from the peer even if the AS paths differ. Default is false."
+  default     = false
+}
+
+variable "bgp_best_path_selection_mode" {
+  type        = string
+  description = "Specifies the BGP best path selection mode. Valid values are `STANDARD` or `LEGACY`. Default is `LEGACY`."
+  default     = "LEGACY"
+}
+
+variable "bgp_inter_region_cost" {
+  type        = string
+  description = "Specifies the BGP inter-region cost mode. Valid values are `DEFAULT` or `ADD_COST_TO_MED`."
+  default     = null
 }

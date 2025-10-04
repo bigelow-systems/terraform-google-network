@@ -15,15 +15,15 @@
  */
 
 terraform {
-  required_version = ">= 0.13.0"
+  required_version = ">= 1.3"
   required_providers {
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 3.62, < 6"
+      version = ">= 3.62, < 8"
     }
   }
 
   provider_meta "google-beta" {
-    module_name = "blueprints/terraform/terraform-google-network:vpc-serverless-connector-beta/v9.1.0"
+    module_name = "blueprints/terraform/terraform-google-network:vpc-serverless-connector-beta/v12.0.0"
   }
 }

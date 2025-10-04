@@ -15,23 +15,23 @@
  */
 
 terraform {
-  required_version = ">= 0.13.0"
+  required_version = ">= 1.3"
 
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 2.12, < 6"
+      version = ">= 2.12, < 8"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 2.12, < 6"
+      version = ">= 2.12, < 8"
     }
   }
 
   provider_meta "google" {
-    module_name = "blueprints/terraform/terraform-google-network:fabric-net-svpc-access/v9.1.0"
+    module_name = "blueprints/terraform/terraform-google-network:fabric-net-svpc-access/v12.0.0"
   }
   provider_meta "google-beta" {
-    module_name = "blueprints/terraform/terraform-google-network:fabric-net-svpc-access/v9.1.0"
+    module_name = "blueprints/terraform/terraform-google-network:fabric-net-svpc-access/v12.0.0"
   }
 }

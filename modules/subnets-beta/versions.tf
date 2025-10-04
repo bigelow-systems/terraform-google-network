@@ -15,16 +15,16 @@
  */
 
 terraform {
-  required_version = ">= 0.13.0"
+  required_version = ">= 1.3"
 
   required_providers {
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 2.19, < 6"
+      version = ">= 2.19, < 8"
     }
   }
 
   provider_meta "google-beta" {
-    module_name = "blueprints/terraform/terraform-google-network:subnets-beta/v9.1.0"
+    module_name = "blueprints/terraform/terraform-google-network:subnets-beta/v12.0.0"
   }
 }

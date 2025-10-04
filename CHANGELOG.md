@@ -2,6 +2,85 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.0](https://github.com/terraform-google-modules/terraform-google-network/compare/v11.1.1...v12.0.0) (2025-09-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **TPG>=6.49:** added include_import_ranges in network connectivity center sub-module ([#633](https://github.com/terraform-google-modules/terraform-google-network/issues/633))
+* **deps:** Update Terraform terraform-google-modules/cloud-dns/google to v6 ([#613](https://github.com/terraform-google-modules/terraform-google-network/issues/613))
+
+### Features
+
+* added producer VPC network spoke ([#634](https://github.com/terraform-google-modules/terraform-google-network/issues/634)) ([d79ab8b](https://github.com/terraform-google-modules/terraform-google-network/commit/d79ab8ba4553e59e766274d051de967150734b5a))
+* **deps:** Update Terraform Google Provider to v7 (major) ([#629](https://github.com/terraform-google-modules/terraform-google-network/issues/629)) ([5a3faca](https://github.com/terraform-google-modules/terraform-google-network/commit/5a3facae2e90912219ecdf6f00245913599cbe15))
+* **TPG>=6.49:** added include_import_ranges in network connectivity center sub-module ([#633](https://github.com/terraform-google-modules/terraform-google-network/issues/633)) ([f10a323](https://github.com/terraform-google-modules/terraform-google-network/commit/f10a3238ece8550da7e41b596b20e2592b615b92))
+
+
+### Bug Fixes
+
+* **deps:** Update Terraform terraform-google-modules/cloud-dns/google to v6 ([#613](https://github.com/terraform-google-modules/terraform-google-network/issues/613)) ([34ae6ad](https://github.com/terraform-google-modules/terraform-google-network/commit/34ae6ad3d7146530da437a5a7d175d868056d9f6))
+* **docs:** Correct bgp_best_path_selection_mode default value ([#618](https://github.com/terraform-google-modules/terraform-google-network/issues/618)) ([6e5ac89](https://github.com/terraform-google-modules/terraform-google-network/commit/6e5ac8999f5f50ee2169b360af48a8b5e6dcda90))
+* typo on the variables ([#624](https://github.com/terraform-google-modules/terraform-google-network/issues/624)) ([8097ce9](https://github.com/terraform-google-modules/terraform-google-network/commit/8097ce9594ef6bfe185d8cb162867f88494877a6))
+
+## [11.1.1](https://github.com/terraform-google-modules/terraform-google-network/compare/v11.1.0...v11.1.1) (2025-05-27)
+
+
+### Bug Fixes
+
+* default value for bgp_inter_region_cost and bgp_best_path_selection_mode ([#616](https://github.com/terraform-google-modules/terraform-google-network/issues/616)) ([1bb1b32](https://github.com/terraform-google-modules/terraform-google-network/commit/1bb1b32a72583122b18cebe417b2c0b4d253b2aa))
+
+## [11.1.0](https://github.com/terraform-google-modules/terraform-google-network/compare/v11.0.0...v11.1.0) (2025-05-08)
+
+
+### Features
+
+* added bgp_best_path_selection_mode bgp_always_compare_med bgp_inter_region_cost in VPC module ([#610](https://github.com/terraform-google-modules/terraform-google-network/issues/610)) ([aab974a](https://github.com/terraform-google-modules/terraform-google-network/commit/aab974aa485132f97edab4e404108e874baaa0a2))
+
+## [11.0.0](https://github.com/terraform-google-modules/terraform-google-network/compare/v10.0.0...v11.0.0) (2025-04-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **TPG>6.28:** added support for packet mirroring firewall policy rule,  src_networks, src_network_scope and dest_network_scope ([#596](https://github.com/terraform-google-modules/terraform-google-network/issues/596))
+
+### Features
+
+* added security profile rule support in network firewall policy ([#602](https://github.com/terraform-google-modules/terraform-google-network/issues/602)) ([339e6f6](https://github.com/terraform-google-modules/terraform-google-network/commit/339e6f6013d5d7b749f4e8eb18410dc59f1d6ab3))
+* **TPG>6.28:** added support for packet mirroring firewall policy rule,  src_networks, src_network_scope and dest_network_scope ([#596](https://github.com/terraform-google-modules/terraform-google-network/issues/596)) ([3ac6496](https://github.com/terraform-google-modules/terraform-google-network/commit/3ac64964bd2fd7f9f4f763d6f5152e9456f2e175))
+
+## [10.0.0](https://github.com/terraform-google-modules/terraform-google-network/compare/v9.3.0...v10.0.0) (2024-12-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* Add network_profile setting to network, update network resource provider ([#584](https://github.com/terraform-google-modules/terraform-google-network/issues/584))
+
+### Features
+
+* Add network_profile setting to network, update network resource provider ([#584](https://github.com/terraform-google-modules/terraform-google-network/issues/584)) ([456a6d9](https://github.com/terraform-google-modules/terraform-google-network/commit/456a6d91235792ab3ee91be05fb01e0f5e515a3c))
+
+## [9.3.0](https://github.com/terraform-google-modules/terraform-google-network/compare/v9.2.0...v9.3.0) (2024-10-07)
+
+
+### Features
+
+* allow enabling global access for PSC endpoints ([#577](https://github.com/terraform-google-modules/terraform-google-network/issues/577)) ([8abb57b](https://github.com/terraform-google-modules/terraform-google-network/commit/8abb57be5f8a88e4e5e326d73d57d72dec58165f))
+* Create module and example for NCC ([#575](https://github.com/terraform-google-modules/terraform-google-network/issues/575)) ([3a6c8fb](https://github.com/terraform-google-modules/terraform-google-network/commit/3a6c8fb900f90bbe999526007c147c515d506d9a))
+
+
+### Bug Fixes
+
+* tests failing on hierarchical policy attachment to org ([#580](https://github.com/terraform-google-modules/terraform-google-network/issues/580)) ([69fca12](https://github.com/terraform-google-modules/terraform-google-network/commit/69fca128fdbb37e71cb144383ce01dfae3637aa0))
+
+## [9.2.0](https://github.com/terraform-google-modules/terraform-google-network/compare/v9.1.0...v9.2.0) (2024-08-29)
+
+
+### Features
+
+* Change serverless-connector input type and update metadata ([#568](https://github.com/terraform-google-modules/terraform-google-network/issues/568)) ([830b09c](https://github.com/terraform-google-modules/terraform-google-network/commit/830b09c7566f32cbbbf25d557912e5013357a43e))
+* **deps:** Update Terraform Google Provider to v6 (major) ([#574](https://github.com/terraform-google-modules/terraform-google-network/issues/574)) ([c90da25](https://github.com/terraform-google-modules/terraform-google-network/commit/c90da2594f488ad0c433931deb29bf9d96cb76a5))
+
 ## [9.1.0](https://github.com/terraform-google-modules/terraform-google-network/compare/v9.0.0...v9.1.0) (2024-04-15)
 
 

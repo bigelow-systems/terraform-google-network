@@ -9,30 +9,34 @@ It supports creating:
 - Secondary ranges for the subnets (if applicable)
 - routes
 - firewall rules
+- network firewall policy
+- hierarchical firewall policy
+- serverless vpc  access connector
+- network connectivity center
 
-[Sub modules](./modules/) are provided for creating individual vpc, subnets, routes, firewall rules, and firewall policies. See the [modules](./modules/) directory for the various sub modules usage.
-- [vpc](./modules/vpc/)
-- [subnet](./modules/subnets/)
-- [route](./modules/routes/)
-- [firewall rules](./modules/firewall-rules/)
-- [hierarchical firewall policy](./modules/hierarchical-firewall-policy/)
-- [network firewall policy](./modules/network-firewall-policy/)
-- [serverless vpc  access connector](./modules/vpc-serverless-connector-beta/)
-- [hierarchical firewall policy](./modules/hierarchical-firewall-policy/)
+[Sub modules](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules) are provided for creating individual vpc, subnets, routes, firewall rules, network firewall policies, hierarchical firewall policy, serverless vpc  access connector and network connectivity center. See the [modules](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules) directory for the various sub modules usage.
+- [vpc](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/vpc)
+- [subnet](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/subnets/)
+- [route](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/routes)
+- [firewall rules](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/firewall-rules)
+- [network firewall policy](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/network-firewall-policy)
+- [hierarchical firewall policy](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/hierarchical-firewall-policy)
+- [serverless vpc  access connector](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/vpc-serverless-connector-beta)
+- [network connectivity center](https://github.com/terraform-google-modules/terraform-google-network/tree/main/modules/network-connectivity-center)
 
 ## Compatibility
 
-This module is meant for use with Terraform 1.3+ and tested using Terraform 1.4+.
+This module is meant for use with Terraform 1.3+.
 If you find incompatibilities using Terraform `>=1.3`, please open an issue.
 
 
 ## Usage
-You can go to the [examples](./examples/) folder, however the usage of the module could be like this in your own main.tf file:
+Comprehensive examples are available in [examples](https://github.com/terraform-google-modules/terraform-google-network/tree/main/examples) folder. Simple usage:
 
 ```hcl
 module "vpc" {
     source  = "terraform-google-modules/network/google"
-    version = "~> 9.1"
+    version = "~> 12.0"
 
     project_id   = "<PROJECT ID>"
     network_name = "example-vpc"
@@ -107,16 +111,20 @@ Then perform the following commands on the root folder:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | auto\_create\_subnetworks | When set to true, the network is created in 'auto subnet mode' and it will create a subnet for each region automatically across the 10.128.0.0/9 address range. When set to false, the network is created in 'custom subnet mode' so the user can explicitly connect subnetwork resources. | `bool` | `false` | no |
+| bgp\_always\_compare\_med | If set to true, the Cloud Router will use MED values from the peer even if the AS paths differ. Default is false. | `bool` | `false` | no |
+| bgp\_best\_path\_selection\_mode | Specifies the BGP best path selection mode. Valid values are `STANDARD` or `LEGACY`. Default is `LEGACY`. | `string` | `"LEGACY"` | no |
+| bgp\_inter\_region\_cost | Specifies the BGP inter-region cost mode. Valid values are `DEFAULT` or `ADD_COST_TO_MED`. | `string` | `null` | no |
 | delete\_default\_internet\_gateway\_routes | If set, ensure that all routes within the network specified whose names begin with 'default-route' and with a next hop of 'default-internet-gateway' are deleted | `bool` | `false` | no |
 | description | An optional description of this resource. The resource must be recreated to modify this field. | `string` | `""` | no |
 | egress\_rules | List of egress rules. This will be ignored if variable 'rules' is non-empty | <pre>list(object({<br>    name                    = string<br>    description             = optional(string, null)<br>    disabled                = optional(bool, null)<br>    priority                = optional(number, null)<br>    destination_ranges      = optional(list(string), [])<br>    source_ranges           = optional(list(string), [])<br>    source_tags             = optional(list(string))<br>    source_service_accounts = optional(list(string))<br>    target_tags             = optional(list(string))<br>    target_service_accounts = optional(list(string))<br><br>    allow = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    deny = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    log_config = optional(object({<br>      metadata = string<br>    }))<br>  }))</pre> | `[]` | no |
-| enable\_ipv6\_ula | Enabled IPv6 ULA, this is a permenant change and cannot be undone! (default 'false') | `bool` | `false` | no |
-| firewall\_rules | This is DEPRICATED and available for backward compatiblity. Use ingress\_rules and egress\_rules variables. List of firewall rules | <pre>list(object({<br>    name                    = string<br>    description             = optional(string, null)<br>    direction               = optional(string, "INGRESS")<br>    disabled                = optional(bool, null)<br>    priority                = optional(number, null)<br>    ranges                  = optional(list(string), [])<br>    source_tags             = optional(list(string))<br>    source_service_accounts = optional(list(string))<br>    target_tags             = optional(list(string))<br>    target_service_accounts = optional(list(string))<br><br>    allow = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    deny = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    log_config = optional(object({<br>      metadata = string<br>    }))<br>  }))</pre> | `[]` | no |
+| enable\_ipv6\_ula | Enabled IPv6 ULA, this is a permanent change and cannot be undone! (default 'false') | `bool` | `false` | no |
+| firewall\_rules | This is DEPRECATED and available for backward compatibility. Use ingress\_rules and egress\_rules variables. List of firewall rules | <pre>list(object({<br>    name                    = string<br>    description             = optional(string, null)<br>    direction               = optional(string, "INGRESS")<br>    disabled                = optional(bool, null)<br>    priority                = optional(number, null)<br>    ranges                  = optional(list(string), [])<br>    source_tags             = optional(list(string))<br>    source_service_accounts = optional(list(string))<br>    target_tags             = optional(list(string))<br>    target_service_accounts = optional(list(string))<br><br>    allow = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    deny = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    log_config = optional(object({<br>      metadata = string<br>    }))<br>  }))</pre> | `[]` | no |
 | ingress\_rules | List of ingress rules. This will be ignored if variable 'rules' is non-empty | <pre>list(object({<br>    name                    = string<br>    description             = optional(string, null)<br>    disabled                = optional(bool, null)<br>    priority                = optional(number, null)<br>    destination_ranges      = optional(list(string), [])<br>    source_ranges           = optional(list(string), [])<br>    source_tags             = optional(list(string))<br>    source_service_accounts = optional(list(string))<br>    target_tags             = optional(list(string))<br>    target_service_accounts = optional(list(string))<br><br>    allow = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    deny = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [])<br>    log_config = optional(object({<br>      metadata = string<br>    }))<br>  }))</pre> | `[]` | no |
 | internal\_ipv6\_range | When enabling IPv6 ULA, optionally, specify a /48 from fd20::/20 (default null) | `string` | `null` | no |
 | mtu | The network MTU (If set to 0, meaning MTU is unset - defaults to '1460'). Recommended values: 1460 (default for historic reasons), 1500 (Internet default), or 8896 (for Jumbo packets). Allowed are all values in the range 1300 to 8896, inclusively. | `number` | `0` | no |
 | network\_firewall\_policy\_enforcement\_order | Set the order that Firewall Rules and Firewall Policies are evaluated. Valid values are `BEFORE_CLASSIC_FIREWALL` and `AFTER_CLASSIC_FIREWALL`. (default null or equivalent to `AFTER_CLASSIC_FIREWALL`) | `string` | `null` | no |
 | network\_name | The name of the network being created | `string` | n/a | yes |
+| network\_profile | "A full or partial URL of the network profile to apply to this network.<br>This field can be set only at resource creation time. For example, the<br>following are valid URLs:<br>  * https://www.googleapis.com/compute/beta/projects/{projectId}/global/networkProfiles/{network_profile_name}<br>  * projects/{projectId}/global/networkProfiles/{network\_profile\_name} | `string` | `null` | no |
 | project\_id | The ID of the project where this VPC will be created | `string` | n/a | yes |
 | routes | List of routes being created in this VPC | `list(map(string))` | `[]` | no |
 | routing\_mode | The network routing mode (default 'GLOBAL') | `string` | `"GLOBAL"` | no |
@@ -190,9 +198,6 @@ The routes list contains maps, where each object represents a route. For the nex
 ## Requirements
 ### Installed Software
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.3
-- [Terraform Provider for GCP](https://github.com/terraform-providers/terraform-provider-google) >= 4.25
-- [Terraform Provider for GCP Beta](https://github.com/terraform-providers/terraform-provider-google-beta) >= 4.25
-- [gcloud](https://cloud.google.com/sdk/gcloud/) >243.0.0
 
 ### Configure a Service Account
 In order to execute this module you must have a Service Account with the following roles:
@@ -213,6 +218,3 @@ In order to operate with the Service Account you must activate the following API
 
 Refer to the [contribution guidelines](./CONTRIBUTING.md) for
 information on contributing to this module.
-
-[terraform-0.13-upgrade]: https://www.terraform.io/upgrade-guides/0-13.html
-[2.6.0]: https://registry.terraform.io/modules/terraform-google-modules/network/google/2.6.0

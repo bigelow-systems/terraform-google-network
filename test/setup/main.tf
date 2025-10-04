@@ -22,29 +22,33 @@ resource "random_string" "random_suffix" {
 }
 
 resource "google_folder" "folder1" {
-  display_name = "ci-network1-${random_string.random_suffix.result}"
-  parent       = var.folder_id != null ? "folders/${var.folder_id}" : "organizations/${var.org_id}"
+  display_name        = "ci-network1-${random_string.random_suffix.result}"
+  parent              = var.folder_id != null ? "folders/${var.folder_id}" : "organizations/${var.org_id}"
+  deletion_protection = false
 }
 
 resource "google_folder" "folder2" {
-  display_name = "ci-network2-${random_string.random_suffix.result}"
-  parent       = var.folder_id != null ? "folders/${var.folder_id}" : "organizations/${var.org_id}"
+  display_name        = "ci-network2-${random_string.random_suffix.result}"
+  parent              = var.folder_id != null ? "folders/${var.folder_id}" : "organizations/${var.org_id}"
+  deletion_protection = false
 }
 
 resource "google_folder" "folder3" {
-  display_name = "ci-network3-${random_string.random_suffix.result}"
-  parent       = var.folder_id != null ? "folders/${var.folder_id}" : "organizations/${var.org_id}"
+  display_name        = "ci-network3-${random_string.random_suffix.result}"
+  parent              = var.folder_id != null ? "folders/${var.folder_id}" : "organizations/${var.org_id}"
+  deletion_protection = false
 }
 
 module "project" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.0"
+  version = "~> 18.0"
 
   name              = "ci-network"
   random_project_id = "true"
   org_id            = var.org_id
   folder_id         = google_folder.folder2.id
   billing_account   = var.billing_account
+  deletion_policy   = "DELETE"
 
   activate_apis = [
     "cloudresourcemanager.googleapis.com",
@@ -53,6 +57,8 @@ module "project" {
     "vpcaccess.googleapis.com",
     "dns.googleapis.com",
     "networksecurity.googleapis.com",
+    "networkconnectivity.googleapis.com",
     "iam.googleapis.com",
+    "servicenetworking.googleapis.com",
   ]
 }
